@@ -2,7 +2,7 @@
   "name": "@unaxiom/ffmpeg",
   "version": "0.0.1",
   "description": "FFmpeg CLI wrapper, including ability to quit the process",
-  "main": "index.js",
+  "main": "src/ffmpeg.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,5 +23,14 @@
   "bugs": {
     "url": "https://github.com/Unaxiom/ffmpeg-node/issues"
   },
-  "homepage": "https://github.com/Unaxiom/ffmpeg-node#readme"
+  "homepage": "https://github.com/Unaxiom/ffmpeg-node#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-tsb": "^2.0.5",
+    "node-notifier": "^5.1.2"
+  },
+  "dependencies": {
+    "@types/node": "^8.0.57",
+    "typescript": "^2.6.2"
+  }
 }
