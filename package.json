@@ -1,0 +1,27 @@
+{
+  "name": "@unaxiom/ffmpeg",
+  "version": "0.0.1",
+  "description": "FFmpeg CLI wrapper, including ability to quit the process",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Unaxiom/ffmpeg-node.git"
+  },
+  "keywords": [
+    "TypeScript",
+    "Node",
+    "FFmpeg",
+    "recording",
+    "stream",
+    "JavaScript"
+  ],
+  "author": "Pratheek Adidela",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Unaxiom/ffmpeg-node/issues"
+  },
+  "homepage": "https://github.com/Unaxiom/ffmpeg-node#readme"
+}
