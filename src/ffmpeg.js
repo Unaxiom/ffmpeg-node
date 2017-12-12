@@ -21,27 +21,26 @@ var FFmpeg = /** @class */ (function () {
     FFmpeg.prototype.addOption = function (option) {
         this.options.push(option);
     };
-    /**Sets the name of thje output file */
-    FFmpeg.prototype.setOutput = function (filename) {
-        this.outputFileName = filename;
+    /**Returns the arguments */
+    FFmpeg.prototype.returnCLIArgs = function () {
+        return this.options;
     };
     /**Begins the FFmpeg process */
     FFmpeg.prototype.run = function () {
-        // let shellCommand = `ffmpeg ${this.options.join(" ")} ${this.outputFileName}`;
         // Run the command here
-        var args = this.options;
-        args.push(this.outputFileName);
-        this.runProcess = child_process.spawn('ffmpeg', args);
-        this.runProcess.stdin.setDefaultEncoding('utf-8');
-        this.runProcess.stdout.pipe(process.stdout);
+        this.runProcess = child_process.spawn('ffmpeg', this.returnCLIArgs());
+        this.runProcess.stderr.pipe(process.stderr);
+        this.runProcess.on('exit', function (code, signal) {
+            console.log("Process has closed with code -> " + code + " and signal -> " + signal);
+        });
     };
     /**Quits the FFmpeg process */
     FFmpeg.prototype.quit = function () {
         // Send the `q` key
-        if (this.runProcess.stdin.writable) {
-            this.runProcess.stdin.write('q\r\n');
-        }
-        this.runProcess.stdin.end();
+        this.runProcess.stdin.setDefaultEncoding('utf-8');
+        this.runProcess.stdin.write('q');
+        // console.log("Writing q to stdin");
+        // this.runProcess.kill('SIGINT')
     };
     /**Kills the process forcefully (might not save the output) */
     FFmpeg.prototype.kill = function () {
@@ -52,3 +51,20 @@ var FFmpeg = /** @class */ (function () {
     return FFmpeg;
 }());
 exports.FFmpeg = FFmpeg;
+function main() {
+    // ffmpeg -y -i screen.vb8.webm -vf "setpts=80*PTS" output.webm
+    var ffmpeg = new FFmpeg();
+    ffmpeg.addOptions([
+        "-y",
+        "-i", "screen.vb8.webm",
+        "-vf", "setpts=80*PTS",
+        "output.webm"
+    ]);
+    ffmpeg.run();
+    setTimeout(function () {
+        console.log("++++++++++++++++++++++++++\nAbout to quit\n\n\n");
+        ffmpeg.quit();
+        console.log("+++++++++++++++++\nSuccessfully quit\n");
+    }, 5000);
+}
+main();

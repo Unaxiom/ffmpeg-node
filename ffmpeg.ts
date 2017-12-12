@@ -8,7 +8,6 @@ import child_process = require('child_process');
 /**Class that does the ffmpeg transformations */
 export class FFmpeg {
     private options: string[]
-    private outputFileName: string
     private runProcess: child_process.ChildProcess
     constructor() {
         this.options = [];
@@ -23,27 +22,27 @@ export class FFmpeg {
     addOption(option: string): void {
         this.options.push(option);
     }
-    /**Sets the name of thje output file */
-    setOutput(filename: string): void {
-        this.outputFileName = filename;
+    /**Returns the arguments */
+    private returnCLIArgs(): string[] {
+        return this.options;
     }
     /**Begins the FFmpeg process */
     run(): void {
-        // let shellCommand = `ffmpeg ${this.options.join(" ")} ${this.outputFileName}`;
         // Run the command here
-        let args = this.options;
-        args.push(this.outputFileName);
-        this.runProcess = child_process.spawn('ffmpeg', args);
-        this.runProcess.stdin.setDefaultEncoding('utf-8');
-        this.runProcess.stdout.pipe(process.stdout);
+        this.runProcess = child_process.spawn('ffmpeg', this.returnCLIArgs());
+        this.runProcess.stderr.pipe(process.stderr);
+
+        this.runProcess.on('exit', function (code: number, signal: string) {
+            console.log("Process has closed with code -> " + code + " and signal -> " + signal);
+        });
     }
     /**Quits the FFmpeg process */
     quit(): void {
         // Send the `q` key
-        if (this.runProcess.stdin.writable) {
-            this.runProcess.stdin.write('q\r\n');
-        }
-        this.runProcess.stdin.end();
+        this.runProcess.stdin.setDefaultEncoding('utf-8');
+        this.runProcess.stdin.write('q');
+        // console.log("Writing q to stdin");
+        // this.runProcess.kill('SIGINT')
     }
     /**Kills the process forcefully (might not save the output) */
     kill(): void {
@@ -52,3 +51,23 @@ export class FFmpeg {
         }
     }
 }
+
+function main() {
+    // ffmpeg -y -i screen.vb8.webm -vf "setpts=80*PTS" output.webm
+    let ffmpeg = new FFmpeg();
+    ffmpeg.addOptions([
+        "-y",
+        "-i", "screen.vb8.webm",
+        "-vf", "setpts=80*PTS",
+        "output.webm"
+    ]);
+    ffmpeg.run();
+    setTimeout(function () {
+        console.log("++++++++++++++++++++++++++\nAbout to quit\n\n\n");
+        ffmpeg.quit();
+        console.log("+++++++++++++++++\nSuccessfully quit\n");
+    }, 5000);
+}
+
+main();
+
