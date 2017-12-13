@@ -28,6 +28,14 @@ export class FFmpeg {
     setOutputFile(filename: string): void {
         this.outputFilename = filename;
     }
+    /**Sets the callback function that is called once the process exits on quits. The first argument to the 
+     * callback is the exit code (number) and the second argument is the signal (string).
+    */
+    setOnCloseCallback(callbackFunc: Function): void {
+        this.runProcess.on('exit', function (code, signal) {
+            callbackFunc(code, signal);
+        });
+    }
     /**Returns the arguments */
     private returnCLIArgs(): string[] {
         if (this.outputFilename != "") {
@@ -37,26 +45,18 @@ export class FFmpeg {
         }
         return this.options;
     }
-    /**Begins the FFmpeg process */
-    run(callbackFunc?: Function): void {
+    /**Begins the FFmpeg process. Accepts an optional silent boolean value which supresses the output */
+    run(silent?: boolean): void {
         // Run the command here
         this.runProcess = child_process.spawn('ffmpeg', this.returnCLIArgs());
         this.runProcess.stdin.setDefaultEncoding('utf-8');
-        this.runProcess.stderr.pipe(process.stderr);
-        if (callbackFunc !== undefined && callbackFunc !== null) {
-            this.runProcess.on('exit', function (code, signal) {
-                callbackFunc(code, signal);
-            });
+        if (!silent) {
+            this.runProcess.stdout.pipe(process.stderr);
+            this.runProcess.stderr.pipe(process.stderr);
         }
     }
     /**Quits the FFmpeg process */
-    quit(callbackFunc?: Function): void {
-        if (callbackFunc !== undefined && callbackFunc !== null) {
-            this.runProcess.on('exit', function (code, signal) {
-                callbackFunc(code, signal);
-            });
-        }
-
+    quit(): void {
         // Send the `q` key
         if (!this.runProcess.killed) {
             this.runProcess.stdin.write('q');
@@ -69,48 +69,4 @@ export class FFmpeg {
         }
     }
 }
-
-function main() {
-    // ffmpeg -y -i screen.vb8.webm -vf "setpts=80*PTS" output.webm
-    let ffmpeg = new FFmpeg();
-    ffmpeg.addOptions([
-        "-y",
-        "-i", "screen.vb8.webm",
-        "-vf", "setpts=80*PTS",
-        // "output.webm"
-    ]);
-    ffmpeg.setOutputFile("output.webm");
-    // ffmpeg.addOptions([
-    //     "-y",
-    //     "-r", "240",
-    //     "-f", "x11grab",
-    //     "-draw_mouse", "0",
-    //     "-s", "1920x1080",
-    //     "-i", ":99",
-    //     "-c:v", "libvpx",
-    //     "-b:v", "384k",
-    //     "-qmin", "7",
-    //     "-qmax", "25",
-    //     "-maxrate", "384k",
-    //     "-bufsize", "1000k",
-    //     "-metadata", "title=Selenium Recording",
-    //     "-metadata", "artist=Unaxiom Technologies",
-    //     "-metadata", "album=Selenium Recordings",
-    //     "-metadata", `year=${new Date().getFullYear().toString()}`,
-    //     // "screen.vb8.webm"
-    // ]);
-    // ffmpeg.setOutputFile("screen.vb8.webm");
-    ffmpeg.run();
-    setTimeout(function () {
-        try {
-            ffmpeg.quit(function (code: number, signal: string) {
-                console.log("Process has been quit from callback with code -> " + code + " and signal -> " + signal);
-            });
-        } catch (e) {
-            throw (e);
-        }
-    }, 5000);
-}
-
-main();
 

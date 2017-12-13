@@ -26,6 +26,14 @@ var FFmpeg = /** @class */ (function () {
     FFmpeg.prototype.setOutputFile = function (filename) {
         this.outputFilename = filename;
     };
+    /**Sets the callback function that is called once the process exits on quits. The first argument to the
+     * callback is the exit code (number) and the second argument is the signal (string).
+    */
+    FFmpeg.prototype.setOnCloseCallback = function (callbackFunc) {
+        this.runProcess.on('exit', function (code, signal) {
+            callbackFunc(code, signal);
+        });
+    };
     /**Returns the arguments */
     FFmpeg.prototype.returnCLIArgs = function () {
         if (this.outputFilename != "") {
@@ -35,25 +43,18 @@ var FFmpeg = /** @class */ (function () {
         }
         return this.options;
     };
-    /**Begins the FFmpeg process */
-    FFmpeg.prototype.run = function (callbackFunc) {
+    /**Begins the FFmpeg process. Accepts an optional silent boolean value which supresses the output */
+    FFmpeg.prototype.run = function (silent) {
         // Run the command here
         this.runProcess = child_process.spawn('ffmpeg', this.returnCLIArgs());
         this.runProcess.stdin.setDefaultEncoding('utf-8');
-        this.runProcess.stderr.pipe(process.stderr);
-        if (callbackFunc !== undefined && callbackFunc !== null) {
-            this.runProcess.on('exit', function (code, signal) {
-                callbackFunc(code, signal);
-            });
+        if (!silent) {
+            this.runProcess.stdout.pipe(process.stderr);
+            this.runProcess.stderr.pipe(process.stderr);
         }
     };
     /**Quits the FFmpeg process */
-    FFmpeg.prototype.quit = function (callbackFunc) {
-        if (callbackFunc !== undefined && callbackFunc !== null) {
-            this.runProcess.on('exit', function (code, signal) {
-                callbackFunc(code, signal);
-            });
-        }
+    FFmpeg.prototype.quit = function () {
         // Send the `q` key
         if (!this.runProcess.killed) {
             this.runProcess.stdin.write('q');
@@ -68,45 +69,3 @@ var FFmpeg = /** @class */ (function () {
     return FFmpeg;
 }());
 exports.FFmpeg = FFmpeg;
-function main() {
-    // ffmpeg -y -i screen.vb8.webm -vf "setpts=80*PTS" output.webm
-    var ffmpeg = new FFmpeg();
-    ffmpeg.addOptions([
-        "-y",
-        "-i", "screen.vb8.webm",
-        "-vf", "setpts=80*PTS",
-    ]);
-    ffmpeg.setOutputFile("output.webm");
-    // ffmpeg.addOptions([
-    //     "-y",
-    //     "-r", "240",
-    //     "-f", "x11grab",
-    //     "-draw_mouse", "0",
-    //     "-s", "1920x1080",
-    //     "-i", ":99",
-    //     "-c:v", "libvpx",
-    //     "-b:v", "384k",
-    //     "-qmin", "7",
-    //     "-qmax", "25",
-    //     "-maxrate", "384k",
-    //     "-bufsize", "1000k",
-    //     "-metadata", "title=Selenium Recording",
-    //     "-metadata", "artist=Unaxiom Technologies",
-    //     "-metadata", "album=Selenium Recordings",
-    //     "-metadata", `year=${new Date().getFullYear().toString()}`,
-    //     // "screen.vb8.webm"
-    // ]);
-    // ffmpeg.setOutputFile("screen.vb8.webm");
-    ffmpeg.run();
-    setTimeout(function () {
-        try {
-            ffmpeg.quit(function (code, signal) {
-                console.log("Process has been quit from callback with code -> " + code + " and signal -> " + signal);
-            });
-        }
-        catch (e) {
-            throw (e);
-        }
-    }, 5000);
-}
-main();
