@@ -1,6 +1,6 @@
 {
   "name": "@unaxiom/ffmpeg",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "FFmpeg CLI wrapper, including ability to quit the process",
   "main": "src/ffmpeg.js",
   "scripts": {
