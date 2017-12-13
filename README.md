@@ -10,10 +10,22 @@ Needs to have `ffmpeg` installed and available in PATH
 
 ## API
 
+- Import the module
+
+```js
+import * as FFmpeg from '@unaxiom/ffmpeg';
+```
+
+Or require the module
+
+```js
+var FFmpeg = require("./ffmpeg");
+```
+
 - Create the object
 
 ```js
-var ffmpeg = new FFmpeg();
+var ffmpeg = new FFmpeg.FFmpeg();
 ```
 
 - Add an individual option
@@ -38,16 +50,24 @@ ffmpeg.addOptions([
 ffmpeg.setOutputFile("output.webm");
 ```
 
+- Set up a callback function when the process completes/quits
+
+```js
+ffmpeg.setOnCloseCallback(function (code: number, signal: string) {
+        console.log("Process quit from setOnCloseCallback with code -> " + code + " and signal -> " + signal);
+    });
+```
+
 - Run the process
 
 ```js
-ffmpeg.run(); // Also accepts a callback function (with code {number/exit code} and signal {string}) which will be run once the process ends
+ffmpeg.run(); // Accepts an optional boolean that supresses the standard output. Default is false.
 ```
 
 - Quit the process (graceful quit)
 
 ```js
-ffmpeg.quit(); // Also accepts a callback function (with code {number/exit code} and signal {string}) which will be run once the process ends
+ffmpeg.quit();
 ```
 
 - Kill the process
