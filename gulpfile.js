@@ -14,7 +14,7 @@ var compilation = tsb.create({
 
 // Set up src ts build task
 gulp.task("srcCompileTS", function () {
-    return gulp.src('ffmpeg.ts')
+    return gulp.src('*.ts')
         .pipe(compilation()) // <- compilation
         .pipe(gulp.dest('./src/'));
 });
@@ -33,7 +33,7 @@ gulp.task('notifySRCComplete', ['srcCompileJS'], function () {
 // Set up watch task
 gulp.task('default', ['srcCompileTS', 'srcCompileJS', 'notifySRCComplete'], function () {
     // SRC files watch
-    gulp.watch('ffmpeg.ts', ['srcCompileTS', 'srcCompileJS', 'notifySRCComplete'], function () {
+    gulp.watch('*.ts', ['srcCompileTS', 'srcCompileJS', 'notifySRCComplete'], function () {
         // Run srcCompileTS
         console.log("Src TS Watch fired!");
     });
