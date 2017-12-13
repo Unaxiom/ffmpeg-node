@@ -38,11 +38,16 @@ export class FFmpeg {
         return this.options;
     }
     /**Begins the FFmpeg process */
-    run(): void {
+    run(callbackFunc?: Function): void {
         // Run the command here
         this.runProcess = child_process.spawn('ffmpeg', this.returnCLIArgs());
         this.runProcess.stdin.setDefaultEncoding('utf-8');
         this.runProcess.stderr.pipe(process.stderr);
+        if (callbackFunc !== undefined && callbackFunc !== null) {
+            this.runProcess.on('exit', function (code, signal) {
+                callbackFunc(code, signal);
+            });
+        }
     }
     /**Quits the FFmpeg process */
     quit(callbackFunc?: Function): void {
@@ -72,7 +77,7 @@ function main() {
         "-y",
         "-i", "screen.vb8.webm",
         "-vf", "setpts=80*PTS",
-        "output.webm"
+        // "output.webm"
     ]);
     ffmpeg.setOutputFile("output.webm");
     // ffmpeg.addOptions([

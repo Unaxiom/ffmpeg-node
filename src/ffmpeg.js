@@ -36,11 +36,16 @@ var FFmpeg = /** @class */ (function () {
         return this.options;
     };
     /**Begins the FFmpeg process */
-    FFmpeg.prototype.run = function () {
+    FFmpeg.prototype.run = function (callbackFunc) {
         // Run the command here
         this.runProcess = child_process.spawn('ffmpeg', this.returnCLIArgs());
         this.runProcess.stdin.setDefaultEncoding('utf-8');
         this.runProcess.stderr.pipe(process.stderr);
+        if (callbackFunc !== undefined && callbackFunc !== null) {
+            this.runProcess.on('exit', function (code, signal) {
+                callbackFunc(code, signal);
+            });
+        }
     };
     /**Quits the FFmpeg process */
     FFmpeg.prototype.quit = function (callbackFunc) {
@@ -70,7 +75,6 @@ function main() {
         "-y",
         "-i", "screen.vb8.webm",
         "-vf", "setpts=80*PTS",
-        "output.webm"
     ]);
     ffmpeg.setOutputFile("output.webm");
     // ffmpeg.addOptions([
