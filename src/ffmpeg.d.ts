@@ -4,7 +4,7 @@ export declare class FFmpeg {
     private runProcess;
     private outputFilename;
     constructor();
-    /**Adds a CLI option to the list */
+    /**Adds a list of CLI options to the process */
     addOptions(optionsList: string[]): void;
     /**Adds a single CLI option to the list */
     addOption(option: string): void;

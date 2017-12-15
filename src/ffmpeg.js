@@ -11,7 +11,7 @@ var FFmpeg = /** @class */ (function () {
         this.options = [];
         this.outputFilename = "";
     }
-    /**Adds a CLI option to the list */
+    /**Adds a list of CLI options to the process */
     FFmpeg.prototype.addOptions = function (optionsList) {
         var _this = this;
         optionsList.forEach(function (option) {

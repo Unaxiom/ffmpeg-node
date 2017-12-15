@@ -14,7 +14,7 @@ export class FFmpeg {
         this.options = [];
         this.outputFilename = "";
     }
-    /**Adds a CLI option to the list */
+    /**Adds a list of CLI options to the process */
     addOptions(optionsList: string[]): void {
         optionsList.forEach(option => {
             this.options.push(option);
