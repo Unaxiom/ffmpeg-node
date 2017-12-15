@@ -1,8 +1,9 @@
 {
   "name": "@unaxiom/ffmpeg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "FFmpeg CLI wrapper, including ability to quit the process",
   "main": "src/ffmpeg.js",
+  "types": "src/ffmpeg.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

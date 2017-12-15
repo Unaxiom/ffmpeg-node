@@ -6,7 +6,7 @@ var notifier = require('node-notifier');
 var compilation = tsb.create({
     target: 'es3',
     module: 'commonjs',
-    declaration: false,
+    declaration: true,
     moduleResolution: 'node',
     types: ["node"],
     lib: ["es2015", "es2015.promise", "es5"],
